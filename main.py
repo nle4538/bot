@@ -1,6 +1,11 @@
+import requests
 from telebot import types
 import telebot
 import os
+import PIL.Image
+
+
+from urllib3 import request
 
 #API_TOKEN = "7750297044:AAFmP7a35CK5l-9uDiEtXixSRFOz9NqUJFE"
 API_TOKEN =  os.environ.get('TOKEN')
@@ -28,6 +33,7 @@ def echo_message(message):
         bot.reply_to(message,
                      "Произошла ошибка при выполнении вычисления. Проверьте правильность ввода и попробуйте снова.")
 
+
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -35,5 +41,13 @@ def start(message):
     btn2 = types.KeyboardButton("❓ Задать вопрос")
     markup.add(btn1, btn2)
     bot.send_message(message.chat.id,text="Привет, {0.first_name}! Я тестовый бот для твоей статьи для habr.com".format(message.from_user), reply_markup=markup)
+
+@bot.message_handler(func=lambda message: "котика" in message.text.lower())
+def cat_message(message):
+    url = "https://cataas.com/"
+    r = requests.get(url+"cat")
+    img = PIL.Image.open(BytesI(r.content))
+    bot.send_photo(message.chat.id, img)
+
 
 bot.infinity_polling()
